@@ -2,8 +2,7 @@
 #
 # VERSION 0.0.1
 
-FROM ubuntu
-MAINTAINER Kazuya Kagawa <kazukgw@gmail.com>
+FROM alpine
 
 RUN sudo apt-get update
 
@@ -36,11 +35,12 @@ RUN cd libvpx-v1.3.0 && ./configure --prefix="/ffmpeg_build" --disable-examples
 RUN cd libvpx-v1.3.0 && make && make install && make clean
 
 # ffmpeg
-RUN wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && tar xjvf ffmpeg-snapshot.tar.bz2 
-RUN PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" && export PKG_CONFIG_PATH 
+RUN wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && tar xjvf ffmpeg-snapshot.tar.bz2
+RUN PKG_CONFIG_PATH="/ffmpeg_build/lib/pkgconfig" && export PKG_CONFIG_PATH
 RUN cd ffmpeg && ./configure --prefix="/ffmpeg_build" --extra-cflags="-I/ffmpeg_build/include" \
    --extra-ldflags="-L/ffmpeg_build/lib" --bindir="/bin" --extra-libs="-ldl" --enable-gpl \
    --enable-libass --enable-libfdk-aac --enable-libfreetype --enable-libmp3lame --enable-libopus \
    --enable-libtheora --enable-libvorbis --enable-libvpx --enable-libx264 --enable-nonfree
 RUN cd ffmpeg && make && make install && make distclean && hash -r
 
+RUN apt-get -q -y clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
